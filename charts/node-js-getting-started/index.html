@@ -1,0 +1,448 @@
+<!doctype html>
+<html>
+	<head>
+		<title>PEGGAT STATS</title>
+        <!-- Bootstrap -->
+        <link href="./node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+		<script src="Chart.js/Chart.js"></script>
+         <script src="tabletop/src/tabletop.js"></script>
+        <STYLE TYPE="text/css">
+BODY {
+    background-color: #FFFFFF; 
+    color: #FFFFFF;
+    background-size: 3500px 2000px;
+    
+}
+ .legend {
+    width: 40em;
+     color: white;
+     text-transform: uppercase;
+}
+
+.legend .title {
+    display: block;
+    margin-bottom: 0.5em;
+    line-height: 1.2em;
+    padding: 0 0.3em;
+}
+
+.legend .color-sample {
+    display: block;
+    float: left;
+    width: 1em;
+    height: 1em;
+    border: 2px solid; /* Comment out if you don't want to show the fillColor */
+    border-radius: 0.5em; /* Comment out if you prefer squarish samples */
+    margin-right: 0.5em;
+}
+.imageClass {
+    width: 30%;
+    height: 30%;
+}
+            
+ .sabreLaser {
+    width: 5%;
+    height: 5%;
+}
+ 
+</STYLE>
+        
+	</head>
+	<body>
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <!-- Include all compiled plugins (below), or include individual files as needed -->
+        <script src="./node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+        
+        	<script>
+
+        var randomScalingFactor = function(){ return Math.round(Math.random()*100)};
+		var lineChartData = {
+			labels : ["Sprint 1","Sprint 2","Sprint 3","Sprint 4","Sprint 5", "Sprint 6"],
+			datasets : [
+				{
+					label: "Prédictibilté",
+					fillColor : "#89E894",
+					strokeColor : "green",
+					pointColor : "#FFFFFF",
+					pointStrokeColor : "#FFFFFF",
+					pointHighlightFill : "#FFFFFF",
+					pointHighlightStroke : "rgba(0,0,0,1)",
+					data : [46,96,96,88.5,87.5,89]
+				}
+			]
+
+		}
+        
+        var lineChartData2 = {
+			labels : ["Sprint 1","Sprint 2","Sprint 3","Sprint 4","Sprint 5", "Sprint 6"],
+			datasets : [
+				{
+					label: "Vélocité",
+					fillColor : "#89E894",
+					strokeColor : "blue",
+					pointColor : "#FFFFFF",
+					pointStrokeColor : "#fff",
+					pointHighlightFill : "#fff",
+					pointHighlightStroke : "rgba(0,0,0,1)",
+					data : [15,27,30,23,21,30]
+				},
+                {
+					label: "CAF",
+					fillColor : "#89E894",
+					strokeColor : "grey",
+					pointColor : "#FFFFFF",
+					pointStrokeColor : "#fff",
+					pointHighlightFill : "#fff",
+					pointHighlightStroke : "rgba(0,0,0,1)",
+					data : [82,68,66,59,56,102]
+				}
+			]
+
+		}
+        
+        
+window.onload = function(){
+    var ctx4 = document.getElementById("predictibilite").getContext("2d");
+    window.myLine = new Chart(ctx4).Line(lineChartData, {
+        responsive: true,
+        scaleShowGridLines : true,
+
+    //Boolean - Whether to fill the dataset with a colour
+    datasetFill : false,
+
+    });
+    
+    var ctx5 = document.getElementById("velocite").getContext("2d");
+    window.myLine = new Chart(ctx5).Line(lineChartData2, {
+        responsive: true,
+        scaleShowGridLines : true,
+
+    //Boolean - Whether to fill the dataset with a colour
+    datasetFill : false,
+    });
+};
+                
+                
+init();
+function init() {
+    Tabletop.init( { key: '1zOUu0i4XfOMeUOTgVkie2CDzsJdhbTlF0Fu02WUq-vw',
+                    callback: showInfo,
+                    simpleSheet: true } )
+    Tabletop.init( { key: '1FGThfZcn3wSrH5IXqZ8IyyJ0BTdCDT-_4MH62qsCllM',
+                    callback: showInfo2,
+                    simpleSheet: true } )
+}
+
+  function showInfo(data, tabletop) {
+      
+      //TODO document.getElementById("patchs").textContent= data[3].S5;
+      //TODO document.getElementById("livraison").textContent= data[4].S5;
+      
+      // Affichage des sabres laser pour les anos
+      var img = new Image();
+      var div = document.getElementById('anomalies');
+      div.innerHTML = data[0].S6;
+      for (var j =0; j < data[0].S6; j++) {
+              var d = document.createElement("img");
+              d.src = './pngStarWars/lightsaber.png';
+              div.appendChild(d).className = "sabreLaser";
+        }
+      
+      
+      var doughnutData = [];
+      for (var i = 0; i < 6; i++) { 
+        doughnutData.push({
+            value: data[i].total,
+            color:data[i].couleur,
+            highlight: data[i].couleur,
+            label: data[i].type
+        });
+      }
+      var ctx2 = document.getElementById("chart-area2").getContext("2d");
+      window.myDoughnut = new Chart(ctx2).Doughnut(doughnutData, {responsive : true, segmentShowStroke : true, tooltipTemplate : "<%if (label){%><%=label%>: <%}%><%= value %>%", segmentStrokeColor : "#89E894", segmentStrokeWidth : 4});
+      
+      
+      var pieData = [];
+      for (var i = 8; i < 12; i++) {
+        pieData.push({
+            value: data[i].total,
+            color:data[i].couleur,
+            highlight: data[i].couleur,
+            label: data[i].type
+        });
+      }
+      var ctx = document.getElementById("chart-area1").getContext("2d");
+      
+      var moduleDoughnut = new Chart(ctx).Doughnut(pieData, { tooltipTemplate : "<%if (label){%><%=label%>: <%}%><%= value %>%", animation: true, percentageInnerCutout : 0, segmentShowStroke: true, segmentStrokeColor : "#89E894", segmentStrokeWidth : 4 });
+		
+      document.getElementById('js-legend').innerHTML = moduleDoughnut.generateLegend();
+      document.getElementById('js-legend2').innerHTML = myDoughnut.generateLegend();
+      
+      var x = ["DarthVader", "DarthMaul", "Yoda", "BobbaFett", "Chewbacca", "Anakin", "Obiwan", "C3PO", "StormTrooper"];
+      x.forEach(function(y) { 
+          var pieDataTemp = [];
+          for (var i = 0; i < 6; i++) {
+            var obj = data[i];
+            pieDataTemp.push({
+                value: obj[y],
+                color:data[i].couleur,
+                highlight: data[i].couleur,
+                label: data[i].type
+            });
+          }
+          var ctxTemp1 = document.getElementById(y + "2").getContext("2d");
+          window.myPieTemp = new Chart(ctxTemp1).Pie(pieDataTemp, {responsive : true, segmentShowStroke : false });
+          
+
+          var pieDataTemp2 = [];
+          for (var i = 8; i < 12; i++) {
+              var val = data[i];
+            pieDataTemp2.push({
+                value: val[y],
+                color:val.couleur,
+                highlight: val.couleur,
+                label: val.type
+            });
+          }
+          var ctxTemp2 = document.getElementById(y + "1").getContext("2d");
+          window.myPieTemp2 = new Chart(ctxTemp2).Pie(pieDataTemp2, {responsive : true, segmentShowStroke : false, percentageInnerCutout : 50});
+      }
+      );
+  }  
+                function showInfo2(data, tabletop) {
+                    var array = new Array();
+                    for (var i = 0; i < 15; i++) {
+                        array[i]=data[i].moyenne;
+                    }
+                    var moodLine = {
+			labels : ["lundi","mardi","mercredi","jeudi","vendredi", "lundi","mardi","mercredi","jeudi","vendredi","lundi","mardi","mercredi","jeudi","vendredi"],
+			datasets : [
+				{
+					label: "Vélocité",
+					fillColor : "#89E894",
+					strokeColor : "orange",
+					pointColor : "#FFFFFF",
+					pointStrokeColor : "#fff",
+					pointHighlightFill : "#fff",
+					pointHighlightStroke : "rgba(0,0,0,1)",
+					data : array
+				}
+			]
+
+		}
+    var ctx6 = document.getElementById("moodline").getContext("2d");
+    window.myLine = new Chart(ctx6).Line(moodLine, {
+        responsive: true,
+        scaleShowGridLines : true,
+
+    //Boolean - Whether to fill the dataset with a colour
+    datasetFill : false,
+    });
+
+          }
+                
+                
+
+	</script>
+        <!-- Stack the columns on mobile by making one full-width and the other half-width -->
+        <!-- Stack the columns on mobile by making one full-width and the other half-width -->
+<div class="row" style="filter:alpha(opacity=50); opacity:0.8; background-color: #89E894">
+  <div class="col-md-1">
+      <h5><SPAN style="font-size:300%;">P</SPAN></h5>
+      <h5><SPAN style="font-size:300%;">E</SPAN></h5>
+      <h5><SPAN style="font-size:300%;">G</SPAN></h5>
+      <h5><SPAN style="font-size:300%;">G</SPAN></h5>
+      <h5><SPAN style="font-size:300%;">A</SPAN></h5>
+      <h5><SPAN style="font-size:300%;">T</SPAN></h5>
+    </div>
+    <div class="col-md-4" style="opacity:0.9;">
+              <div id="canvas-holder">
+                  <h5><SPAN style="font-size:300%;">SPRINT-6</SPAN></h5>
+                  <h5><SPAN style="font-size:200%;">18 janvier - 5 fevrier</SPAN></h5>
+                  <h5><SPAN style="font-size:150%;">PREDICTIBILITE 88%</SPAN></h5>
+      <canvas id="predictibilite"></canvas></div>
+    </div>
+    
+    <div class="col-md-3" style="opacity:0.8;">
+      <h5><SPAN style="font-size:200%;">PROJETS</SPAN></h5>
+      <div id="canvas-holder">
+          <canvas id="chart-area1" />
+      </div>
+      <div id="js-legend" class="legend"></div>
+    </div>
+      
+    <div class="col-md-3" style="opacity:0.8;">
+        <h5><SPAN style="font-size:200%;">ACTIVITES</SPAN></h5>
+        <div id="canvas-holder">
+            <canvas id="chart-area2" />
+        </div>
+        <div id="js-legend2" class="legend"></div>
+    </div>
+            
+    </div>
+        <div class="row" style="filter:alpha(opacity=50); opacity:0.8; background-color: #89E894">
+            <div class="col-md-1">
+        </div>
+                        <div class="col-md-4" id="canvas-holder">
+                    <h5><SPAN style="font-size:150%;">CAF/VELOCITE</SPAN></h5>
+      <canvas id="velocite"></canvas></div>
+            
+  <div class="col-md-3" id="canvas-holder">
+                    <h5><SPAN style="font-size:150%;">HUMEUR DU SPRINT</SPAN></h5>
+      <canvas id="moodline"></canvas></div>
+            <div class="col-md-3" id="canvas-holder">
+                <h5><SPAN style="font-size:150%;">ANOMALIES CORRIGEES</SPAN><br> <SPAN id="anomalies" style="font-size:150%;"></SPAN></h5>
+                <!--h5><SPAN style="font-size:150%;">// TODO -- PATCHS</SPAN> <SPAN id="patchs" style="font-size:150%;"></SPAN></h5>
+                <h5><SPAN style="font-size:150%;">// TODO -- LIVRAISONS</SPAN> <SPAN id="livraison" style="font-size:150%;"></SPAN></h5 -->
+				<h5><SPAN style="font-size:150%;"> </SPAN></SPAN></h5>
+                <!--h5><SPAN style="font-size:150%;">DISEASE FAKTOR</SPAN></SPAN></h5>
+				<h5><SPAN style="font-size:150%;">9 Jours</SPAN></SPAN></h5 -->
+      <canvas id="moodline"></canvas></div>
+    </div>
+        
+    </div>
+</div>
+    <div class="row" style="filter:alpha(opacity=50); opacity:0.8; background-color: #78D5E3">
+            <div class="col-md-2">
+            </div>
+        <div class="col-md-2">
+      <img src="./pngStarWars/DarthMaul.png" class="imageClass"/>
+    </div>
+  <div class="col-md-2">
+      <img src="./pngStarWars/BobbaFett.png" class="imageClass"/>
+    </div>
+    <div class="col-md-2">
+      <img src="./pngStarWars/Yoda.png" class="imageClass"/>
+    </div>
+    <div class="col-md-2">
+      <img src="./pngStarWars/Anakin.png" class="imageClass"/>
+    </div>
+        <div class="col-md-2">
+      <img src="./pngStarWars/Obiwan.png" class="imageClass"/>          
+        </div>
+        </div>
+<div class="row" style="filter:alpha(opacity=50); opacity:0.8; background-color: #78D5E3">
+  <div class="col-md-2">
+      <h5><SPAN style="font-size:300%;">D</SPAN></h5>
+      <h5><SPAN style="font-size:300%;">E</SPAN></h5>
+      <h5><SPAN style="font-size:300%;">V</SPAN></h5>
+    </div>
+        <div class="col-md-2">
+      <div id="canvas-holder">
+          <canvas id="DarthMaul1" />
+      </div>
+      <div id="canvas-holder">
+          <canvas id="DarthMaul2" />
+      </div>
+    </div>
+  <div class="col-md-2">
+      <div id="canvas-holder">
+          <canvas id="BobbaFett1" />
+      </div>
+      <div id="canvas-holder">
+          <canvas id="BobbaFett2" />
+      </div>
+    </div>
+    <div class="col-md-2">
+      <div id="canvas-holder">
+          <canvas id="Yoda1" />
+      </div>
+      <div id="canvas-holder">
+          <canvas id="Yoda2" />
+      </div>
+    </div>
+      <div class="col-md-2">
+      <div id="canvas-holder">
+          <canvas id="Anakin1" />
+      </div>
+      <div id="canvas-holder">
+          <canvas id="Anakin2" />
+      </div>
+    </div>
+        <div class="col-md-2">
+      <div id="canvas-holder">
+          <canvas id="Obiwan1" />
+      </div>
+      <div id="canvas-holder">
+          <canvas id="Obiwan2" />
+      </div>
+    </div>
+</div>
+        <div class="row" style="filter:alpha(opacity=50); opacity:0.8; background-color: #BED661">
+            <div class="col-md-2">
+    </div>
+  <div class="col-md-2">
+      <img src="./pngStarWars/Chewee.png" class="imageClass"/>
+      
+    </div>
+      <div class="col-md-2">
+      <img src="./pngStarWars/Stormtrooper.png" class="imageClass"/>
+</div>
+        </div>
+    <div class="row" style="filter:alpha(opacity=50); opacity:0.8; background-color: #BED661">
+    <div class="col-md-2">
+      <h5><SPAN style="font-size:300%;">T</SPAN></h5>
+      <h5><SPAN style="font-size:300%;">E</SPAN></h5>
+      <h5><SPAN style="font-size:300%;">S</SPAN></h5>
+      <h5><SPAN style="font-size:300%;">T</SPAN></h5>
+    </div>
+  <div class="col-md-2">
+      <div id="canvas-holder">
+          <canvas id="Chewbacca1" />
+      </div>
+      <div id="canvas-holder">
+          <canvas id="Chewbacca2" />
+      </div>
+    </div>
+      <div class="col-md-2">
+    <div id="canvas-holder">
+        <canvas id="StormTrooper1" />
+    </div>
+    <div id="canvas-holder">
+        <canvas id="StormTrooper2">
+    </div>
+</div>
+        </div>
+<div class="row" style="filter:alpha(opacity=50); opacity:0.8; background-color:#93E2D5">
+    <div class="col-md-2">
+    </div>
+     <div class="col-md-2">
+      <img src="./pngStarWars/C3PO.png" class="imageClass"/>
+  </div>
+         <div class="col-md-1" style="border-left: 3px solid #ccc;">
+    </div>
+           <div class="col-md-2">
+      <img src="./pngStarWars/Darth%20Vader.png" class="imageClass"/>
+</div>
+</div>
+<div class="row" style="filter:alpha(opacity=50); opacity:0.8; background-color:#93E2D5">
+    <div class="col-md-2">
+      <h5><SPAN style="font-size:300%;">E</SPAN></h5>
+      <h5><SPAN style="font-size:300%;">X</SPAN></h5>
+      <h5><SPAN style="font-size:300%;">P</SPAN></h5>
+    </div>
+     <div class="col-md-2">
+     <div id="canvas-holder">
+        <canvas id="C3PO1" />
+    </div>
+    <div id="canvas-holder">
+        <canvas id="C3PO2">
+    </div>
+  </div>
+         <div class="col-md-1">
+      <h5><SPAN style="font-size:300%;">S</SPAN></h5>
+      <h5><SPAN style="font-size:300%;">M</SPAN></h5>
+    </div>
+           <div class="col-md-2">
+    <div id="canvas-holder">
+        <canvas id="DarthVader1" />
+    </div>
+    <div id="canvas-holder">
+        <canvas id="DarthVader2">
+    </div>
+</div>
+          </div>
+
+	</body>
+</html>
